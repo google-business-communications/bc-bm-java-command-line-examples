@@ -151,6 +151,7 @@ public class LocationSample {
       BusinessCommunications.Brands.Locations.Create request = builder
           .build().brands().locations().create(brandName,
               new Location()
+                  .setDefaultLocale("en")
                   .setAgent(agentName)
                   .setPlaceId("ChIJj61dQgK6j4AR4GeTYWZsKWw")
                   .setConversationalSettings(conversationalSettings)
