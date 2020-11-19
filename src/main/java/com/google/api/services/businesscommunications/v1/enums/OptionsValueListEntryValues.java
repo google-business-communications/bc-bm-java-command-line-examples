@@ -13,7 +13,11 @@
  */
 package com.google.api.services.businesscommunications.v1.enums;
 
-public enum BusinessMessagesEntryPointConfigValues {
-  LOCATION,
-  NON_LOCAL
+public enum OptionsValueListEntryValues {
+  WEB_CHAT,
+  PHONE,
+  EMAIL,
+  FAQS,
+  TWITTER,
+  WHATSAPP
 }

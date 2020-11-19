@@ -17,30 +17,11 @@ import com.google.api.services.businesscommunications.v1.BusinessCommunications;
 import com.google.api.services.businesscommunications.v1.enums.BusinessMessagesEntryPointConfigValues;
 import com.google.api.services.businesscommunications.v1.enums.DayOfWeek;
 import com.google.api.services.businesscommunications.v1.enums.InteractionType;
-import com.google.api.services.businesscommunications.v1.model.Agent;
-import com.google.api.services.businesscommunications.v1.model.BotRepresentative;
-import com.google.api.services.businesscommunications.v1.model.BusinessMessagesAgent;
-import com.google.api.services.businesscommunications.v1.model.BusinessMessagesEntryPointConfig;
-import com.google.api.services.businesscommunications.v1.model.ConversationStarters;
-import com.google.api.services.businesscommunications.v1.model.ConversationalSetting;
-import com.google.api.services.businesscommunications.v1.model.Hours;
-import com.google.api.services.businesscommunications.v1.model.HumanRepresentative;
-import com.google.api.services.businesscommunications.v1.model.MessagingAvailability;
-import com.google.api.services.businesscommunications.v1.model.OfflineMessage;
-import com.google.api.services.businesscommunications.v1.model.OpenUrlAction;
-import com.google.api.services.businesscommunications.v1.model.Phone;
-import com.google.api.services.businesscommunications.v1.model.PrivacyPolicy;
-import com.google.api.services.businesscommunications.v1.model.SuggestedAction;
-import com.google.api.services.businesscommunications.v1.model.SuggestedReply;
-import com.google.api.services.businesscommunications.v1.model.Suggestion;
-import com.google.api.services.businesscommunications.v1.model.SupportedAgentInteraction;
-import com.google.api.services.businesscommunications.v1.model.TimeOfDay;
-import com.google.api.services.businesscommunications.v1.model.WelcomeMessage;
+import com.google.api.services.businesscommunications.v1.enums.OptionsValueListEntryValues;
+import com.google.api.services.businesscommunications.v1.model.*;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -162,10 +143,10 @@ public class AgentSample {
 
   /**
    * Creates a test agent associated with the given brand.
-   *
+   * <p>
    * This test agent is configured with a bot as its primary interaction type with an additional
    * non-primary interaction type for human to human interactions.
-   *
+   * <p>
    * If this was a real agent, the expected behavior for a conversation would be that an end-user
    * begins a conversation with a bot and if the conversation goes beyond the capabilities of the
    * bot, the conversation could be handed off to a live human agent.
@@ -224,6 +205,34 @@ public class AgentSample {
             .setConversationStarters(conversationStarters));
       }};
 
+      // Configuration options for launching on non-local entry points
+      NonLocalConfig nonLocalConfig = new NonLocalConfig()
+          // List of phone numbers for call deflection, values must be globally unique
+          // Generating a random phone number for demonstration purposes
+          // This should be replaced with a real brand phone number
+          .setCallDeflectionPhoneNumbers(new ArrayList<Phone>() {{
+            add(new Phone().setNumber(getRandomPhoneNumber()));
+          }})
+          // Contact information for the agent that displays with the messaging button
+          .setContactOption(new ContactOption().setOptions(new ArrayList<String>() {{
+            add(OptionsValueListEntryValues.WEB_CHAT.toString());
+            add(OptionsValueListEntryValues.FAQS.toString());
+          }}).setUrl("https://www.example-url.com"))
+          // Domains enabled for messaging within Search, values must be globally unique
+          // Generating a random URL for demonstration purposes
+          // This should be replaced with a real brand URL
+          .setEnabledDomains(new ArrayList<String>() {{
+            add(getRandomUrl());
+          }})
+          // Agent's phone number. Overrides the `phone` field for
+          // conversations started from non-local entry points
+          .setPhoneNumber(new Phone().setNumber("+12223335555"))
+          // Example is for launching in Canada and the USA
+          .setRegionCodes(new ArrayList<String>() {{
+            add("CA");
+            add("US");
+          }});
+
       BusinessCommunications.Brands.Agents.Create request = builder
           .build().brands().agents().create(brandName,
               new Agent()
@@ -233,10 +242,14 @@ public class AgentSample {
                       .setCustomAgentId("My custom agent ID") // Optional
                       .setPhone(new Phone().setNumber("+12223334444")) // Optional
                       .setLogoUrl("https://storage.googleapis.com/sample-logos/google-logo.png")
+                      .setNonLocalConfig(nonLocalConfig)
                       .setEntryPointConfigs(new ArrayList<BusinessMessagesEntryPointConfig>() {{
                         add(new BusinessMessagesEntryPointConfig()
                             .setAllowedEntryPoint(
                                 BusinessMessagesEntryPointConfigValues.LOCATION.toString()));
+                        add(new BusinessMessagesEntryPointConfig()
+                            .setAllowedEntryPoint(
+                                BusinessMessagesEntryPointConfigValues.NON_LOCAL.toString()));
                       }})
                       .setPrimaryAgentInteraction(new SupportedAgentInteraction()
                           .setInteractionType(InteractionType.BOT.toString())
@@ -407,5 +420,24 @@ public class AgentSample {
     } catch (Exception e) {
       logger.log(Level.SEVERE, Constants.EXCEPTION_WAS_THROWN, e);
     }
+  }
+
+  private static String getRandomPhoneNumber() {
+    long randomDigits = (long) Math.floor(Math.random() * 9_000_000_000L) + 1_000_000_000L;
+    return "+1" + randomDigits;
+  }
+
+  private static String getRandomUrl() {
+    int leftLimit = 'a';
+    int rightLimit = 'z';
+    int targetLength = 10;
+    Random random = new Random();
+
+    String randomString = random.ints(leftLimit, rightLimit + 1)
+        .limit(targetLength)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
+
+    return "https://www." + randomString + ".com";
   }
 }
