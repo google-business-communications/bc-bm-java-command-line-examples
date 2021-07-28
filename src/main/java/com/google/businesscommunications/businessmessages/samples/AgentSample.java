@@ -18,6 +18,7 @@ import com.google.api.services.businesscommunications.v1.enums.BusinessMessagesE
 import com.google.api.services.businesscommunications.v1.enums.DayOfWeek;
 import com.google.api.services.businesscommunications.v1.enums.InteractionType;
 import com.google.api.services.businesscommunications.v1.enums.OptionsValueListEntryValues;
+import com.google.api.services.businesscommunications.v1.enums.CustomSurveyQuestionTypeValues;
 import com.google.api.services.businesscommunications.v1.model.*;
 
 import java.io.IOException;
@@ -128,6 +129,58 @@ public class AgentSample {
 
     View.printBreak(3);
 
+    View.header("Updating Agent Custom Survey");
+    // Configure a CSAT survey with one template question and a custom question
+    SurveyConfig updatedSurveyConfig = new SurveyConfig()
+            .setCustomSurveys(new HashMap<String, CustomSurveyConfig>() {{
+              put("en", new CustomSurveyConfig()
+                      .setCustomQuestions(new ArrayList<SurveyQuestion>() {{
+                        add(new SurveyQuestion()
+                                .setName("Question Name 1")
+                                .setQuestionContent("Does a custom question yield better survey results?")
+                                .setQuestionType(CustomSurveyQuestionTypeValues.PARTNER_CUSTOM_QUESTION.toString())
+                                .setResponseOptions(new ArrayList<SurveyResponse>() {{
+                                  add(new SurveyResponse()
+                                          .setContent("👍")
+                                          .setPostbackData("yes"));
+                                  add(new SurveyResponse()
+                                          .setContent("👎")
+                                          .setPostbackData("no"));
+                                }})
+                        );
+                        add(new SurveyQuestion()
+                                .setName("Question Name 2")
+                                .setQuestionContent("How would you rate this agent?")
+                                .setQuestionType(CustomSurveyQuestionTypeValues.PARTNER_CUSTOM_QUESTION.toString())
+                                .setResponseOptions(new ArrayList<SurveyResponse>() {{
+                                  add(new SurveyResponse()
+                                          .setContent("⭐️")
+                                          .setPostbackData("1-star"));
+                                  add(new SurveyResponse()
+                                          .setContent("⭐️️⭐️")
+                                          .setPostbackData("2-star"));
+                                  add(new SurveyResponse()
+                                          .setContent("⭐️⭐️⭐️")
+                                          .setPostbackData("3-star"));
+                                  add(new SurveyResponse()
+                                          .setContent("⭐️⭐️⭐️⭐️")
+                                          .setPostbackData("4-star"));
+                                  add(new SurveyResponse()
+                                          .setContent("⭐️⭐️⭐️⭐️⭐️")
+                                          .setPostbackData("5-star"));
+                                }})
+                        );
+                      }})
+              );
+            }})
+            .setTemplateQuestionIds(new ArrayList<String>(){{
+              add("GOOGLE_DEFINED_ASSOCIATE_SATISFACTION");
+              add("GOOGLE_DEFINED_CUSTOMER_EFFORT_ALTERNATE");
+            }});
+    updateAgentSurveyConfig(agent, updatedSurveyConfig);
+
+    View.printBreak(3);
+
     // List agents
     View.header("List Agents:");
     listAgents(brandName);
@@ -233,6 +286,31 @@ public class AgentSample {
             add("US");
           }});
 
+      // Configure a CSAT survey with one template question and a custom question
+      SurveyConfig surveyConfig = new SurveyConfig()
+          .setCustomSurveys(new HashMap<String, CustomSurveyConfig>() {{
+            put("en", new CustomSurveyConfig()
+                .setCustomQuestions(new ArrayList<SurveyQuestion>() {{
+                  add(new SurveyQuestion()
+                      .setName("Question Name 1")
+                      .setQuestionContent("Did this agent do the best that it could?")
+                      .setQuestionType(CustomSurveyQuestionTypeValues.PARTNER_CUSTOM_QUESTION.toString())
+                      .setResponseOptions(new ArrayList<SurveyResponse>() {{
+                        add(new SurveyResponse()
+                            .setContent("👍")
+                            .setPostbackData("yes"));
+                        add(new SurveyResponse()
+                            .setContent("👎")
+                            .setPostbackData("no"));
+                        }})
+                  );
+                }})
+            );
+          }})
+          .setTemplateQuestionIds(new ArrayList<String>(){{
+            add("GOOGLE_DEFINED_ASSOCIATE_SATISFACTION");
+          }});
+
       BusinessCommunications.Brands.Agents.Create request = builder
           .build().brands().agents().create(brandName,
               new Agent()
@@ -258,6 +336,7 @@ public class AgentSample {
                                   .setHours(hours))))
                       .setAdditionalAgentInteractions(additionalAgentInteractions) // Optional
                       .setConversationalSettings(conversationalSettings)
+                      .setSurveyConfig(surveyConfig)
                   ));
 
       agent = request.execute();
@@ -325,11 +404,25 @@ public class AgentSample {
    * @return The updated agent object.
    */
   private static Agent updateAgentPrimaryAgentInteraction(Agent agent,
-      SupportedAgentInteraction supportedAgentInteraction) {
+    SupportedAgentInteraction supportedAgentInteraction) {
     // Set the new primary interaction within the agent object
     agent.getBusinessMessagesAgent().setPrimaryAgentInteraction(supportedAgentInteraction);
 
     return updateAgent(agent, "businessMessagesAgent.primaryAgentInteraction");
+  }
+
+  /**
+   * Update the agent's feedback survey
+   *
+   * @param agent The agent that needs to be updated.
+   * @param surveyConfig The new surveyConfig
+   * @return The updated agent object.
+   */
+  private static Agent updateAgentSurveyConfig(Agent agent, SurveyConfig surveyConfig) {
+    // Set the new survey config within the agent object
+    agent.getBusinessMessagesAgent().setSurveyConfig(surveyConfig);
+
+    return updateAgent(agent, "businessMessagesAgent.surveyConfig");
   }
 
   /**
