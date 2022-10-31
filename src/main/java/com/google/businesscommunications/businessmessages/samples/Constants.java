@@ -16,7 +16,7 @@ package com.google.businesscommunications.businessmessages.samples;
 public interface Constants {
     // Name of your service account key credentials file.
     // You must create this file in order to run this sample.
-    public static final String CREDENTIALS_FILE_NAME = "bc-agent-service-account-credentials.json";
+    public static final String CREDENTIALS_FILE_NAME = "service_account_key.json";
 
     public static final String API_URL = "https://businesscommunications.googleapis.com/";
 

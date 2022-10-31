@@ -255,7 +255,8 @@ public class AgentSample {
             .setWelcomeMessage(new WelcomeMessage().setText("Welcome! How can I help?"))
             .setOfflineMessage(new OfflineMessage().setText(
                 "We are currently offline, please leave a message and we will get back to you as soon as possible."))
-            .setConversationStarters(conversationStarters));
+            .setConversationStarters(conversationStarters)
+            .setNegativeBotFeedbackMessage(new NegativeBotFeedbackMessage().setText("Thanks for the feedback! These help us improve the conversational experience to better help our customers.")));
       }};
 
       // Configuration options for launching on non-local entry points
@@ -404,7 +405,7 @@ public class AgentSample {
    * @return The updated agent object.
    */
   private static Agent updateAgentPrimaryAgentInteraction(Agent agent,
-    SupportedAgentInteraction supportedAgentInteraction) {
+      SupportedAgentInteraction supportedAgentInteraction) {
     // Set the new primary interaction within the agent object
     agent.getBusinessMessagesAgent().setPrimaryAgentInteraction(supportedAgentInteraction);
 

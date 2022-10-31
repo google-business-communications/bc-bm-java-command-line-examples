@@ -107,3 +107,36 @@ mvn compile && mvn exec:java -Dexec.mainClass="com.google.businesscommunications
 ```
 
 Replace AGENT_NAME with a valid agent ID in "brands/BRAND_ID/agents/AGENT_ID" format. If you haven't created an agent, run the agent sample with the NO-DELETE argument to create an agent to reference.
+
+
+### List template survey questions
+
+This sample lists all template questions provided by Google. You can configure an Agent to send these questions when a survey is triggered.
+
+View the [source code](https://github.com/google-business-communications/bc-bm-java-command-line-examples/blob/master/ListSurveyQuestions.java).
+
+Usage:
+
+```bash
+mvn compile && mvn exec:java -Dexec.mainClass="com.google.businesscommunications.businessmessages.samples.ListSurveyQuestions"
+```
+
+### Agent Greeting operations
+
+These sample demonstrates how to create a new greeting, get greeting details, update the greeting, and list all greetings.
+
+View the source code to [CreateGreeting](https://github.com/google-business-communications/bc-bm-java-command-line-examples/blob/master/src/main/java/com/google/businesscommunications/businessmessages/samples/CreateGreeting.java), [GetGreeting](https://github.com/google-business-communications/bc-bm-java-command-line-examples/blob/master/src/main/java/com/google/businesscommunications/businessmessages/samples/GetGreeting.java), [UpdateGreetings](https://github.com/google-business-communications/bc-bm-java-command-line-examples/blob/master/src/main/java/com/google/businesscommunications/businessmessages/samples/UpdateGreeting.java), and [ListGreetings](https://github.com/google-business-communications/bc-bm-java-command-line-examples/blob/master/src/main/java/com/google/businesscommunications/businessmessages/samples/ListGreetings.java).
+
+Usage:
+
+```bash
+mvn compile && mvn exec:java -Dexec.mainClass="com.google.businesscommunications.businessmessages.samples.CreateGreeting"
+
+mvn compile && mvn exec:java -Dexec.mainClass="com.google.businesscommunications.businessmessages.samples.GetGreeting"
+
+mvn compile && mvn exec:java -Dexec.mainClass="com.google.businesscommunications.businessmessages.samples.UpdateGreeting"
+
+mvn compile && mvn exec:java -Dexec.mainClass="com.google.businesscommunications.businessmessages.samples.ListGreetings"
+```
+
+For each of the snippets above, ensure you modify the agentId, brandId, and greetingId within the respective snippets.

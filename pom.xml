@@ -41,7 +41,7 @@ limitations under the License.
         <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-businesscommunications</artifactId>
-            <version>1.25.3</version>
+            <version>2.1.0</version>
         </dependency>
 
         <!-- App Engine SDK dependency : only required if you need to explicitly use App Engine API -->
